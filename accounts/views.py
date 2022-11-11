@@ -26,7 +26,7 @@ class HelloView(APIView):
 #     users = User.objects.all()
 #     serializer = UserSerializer(users, many=True)
 #     return Response(serializer.data)
-    
+#adminside  
 class AllUser(APIView):
 	permission_classes = (IsAdminUser, )
 
@@ -34,7 +34,7 @@ class AllUser(APIView):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
 		return Response(serializer.data)
-		
+#adminside	
 class DeleteUser(APIView):
 	permission_classes = (IsAdminUser, )
 
@@ -44,7 +44,7 @@ class DeleteUser(APIView):
 		content = {'message': 'Deleted,'+user.username,}
 		return Response(content,status=status.HTTP_202_ACCEPTED)
 	
-
+#adminside
 class EditUser(APIView):
 	permission_classes = (IsAdminUser, )
 
@@ -55,7 +55,7 @@ class EditUser(APIView):
 			userData.save()
 			return Response(userData.data, status=status.HTTP_200_OK)
 
-
+#adminside
 class NewUserAdd(APIView):
 	permission_classes = (IsAdminUser, )
 	def post(self,request ):
@@ -153,7 +153,7 @@ class GetBoard(APIView):
 			else:
 				content = {'message': 'This is not a palindrome.' }
 				return Response (content, status=status.HTTP_200_OK)
-	
+
 class GameList(APIView):
 	permission_classes = (IsAuthenticated, )
 	def get(self,request):
@@ -161,9 +161,28 @@ class GameList(APIView):
 		serializer = GameSerializer(lists, many=True)
 		return Response(serializer.data)
 
+#adim-side
 class GameListAll(APIView):
 	permission_classes = (IsAdminUser, )
 	def get(self,request):
 		lists=Game.objects.all()
 		serializer = GameSerializer(lists, many=True)
 		return Response(serializer.data)
+
+#user-side		
+class EditAccount(APIView):
+	permission_classes = (IsAuthenticated, )
+	def post(self, request):
+		user = User.objects.get(id=request.user.id)
+		userData =  UserSerializer(instance=user, data=request.data, partial=True)
+		if userData.is_valid():
+			userData.save()
+			return Response(userData.data, status=status.HTTP_200_OK)
+
+class DeleteAccount(APIView):
+	permission_classes = (IsAuthenticated, )
+	def post(self, request):
+		user = User.objects.get(id=request.user.id)
+		user.delete()
+		content = {'message': 'Deleted,'+user.username,}
+		return Response(content,status=status.HTTP_202_ACCEPTED)
